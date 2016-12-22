@@ -1,30 +1,42 @@
 package recomendation
 
+import scala.math._
+
 /**
   * Created by adriano on 10/12/16.
   */
 object EuclidianDistanceScore {
 
+  def sum(vals:List[Double]) : Double = vals.sum
+
   def similarityDistance[T](movies:List[Map[String, Any]], person1:Int, person2:Int) : Double = {
-    val filterByUserId     = (userId:Int) => {
+    val byUserId = (userId:Int) => {
       (movie:Map[String, Any]) => {
         val userId = movie("userId").asInstanceOf[Int]
         userId == userId
       }
     }
 
-    val person1Movies = movies.filter(filterByUserId(person1))
-    val person2Movies = movies.filter(filterByUserId(person2))
-
-    val similarMovies:List[Map[String, Any]] = person1Movies
-      .filter( person1Movie => person2Movies.exists(person2Movie => person1Movie("userId") == person2Movie("userId")))
-      .map( similarMovie => Map("movieId" -> similarMovie("movieId"), "similarity" -> 1))
-
-    if(similarMovies.length == 0){
-      return 0.0
+    // We have to know if there's some similar movies between the users
+    val person1Movies   = movies.filter(byUserId(person1))
+    val person2Movies   = movies.filter(byUserId(person2))
+    val bySimilarMovies = (person1Movie:Map[String,_]) => {
+      person2Movies.exists(person2Movie => person1Movie("userId") == person2Movie("userId"))
     }
 
-    0.1
+    val hasSimilarMovies:Boolean = person1Movies
+      .filter(bySimilarMovies)
+      .isEmpty
+
+    if(!hasSimilarMovies){
+      return 0
+    }
+
+    // Here we apply the Euclidian Distance Calculation
+    1/sum(for( person1Movie <- person1Movies; person2Movie <- person2Movies
+             if (person1Movie("movieId") == person2Movie("movieId")))
+      yield pow(person1Movie("rating").asInstanceOf[Double] - person2Movie("rating").asInstanceOf[Double],2)
+    )
   }
 
 }
