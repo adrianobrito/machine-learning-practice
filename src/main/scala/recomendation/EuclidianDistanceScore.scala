@@ -10,8 +10,8 @@ object EuclidianDistanceScore extends RecomendationAlgorithm {
   override def similarityDistance(movies:List[Map[String, Any]], person1:Int, person2:Int) : Double = {
     val byUserId = (userId:Int) => {
       (movie:Map[String, Any]) => {
-        val userId = movie("userId").asInstanceOf[Int]
-        userId == userId
+        val currentUserId = movie("userId").asInstanceOf[Int]
+        userId == currentUserId
       }
     }
 
@@ -29,6 +29,14 @@ object EuclidianDistanceScore extends RecomendationAlgorithm {
     if(!hasSimilarMovies){
       return 0
     }
+
+    val commonMovies = (for {
+      person1Movie <- person1Movies;
+      person2Movie <- person2Movies
+      if (person1Movie("movieId") == person2Movie("movieId"))
+    } yield {
+      pow(person1Movie("rating").asInstanceOf[Double] - person2Movie("rating").asInstanceOf[Double],2)
+    })
 
     // Here we apply the Euclidian Distance Calculation
     1/((for {
