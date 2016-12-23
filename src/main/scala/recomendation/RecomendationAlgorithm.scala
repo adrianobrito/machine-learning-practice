@@ -5,6 +5,6 @@ package recomendation
   */
 trait RecomendationAlgorithm {
 
-
+  def similarityDistance(movies:List[Map[String, Any]], person1:Int, person2:Int) : Double
 
 }

@@ -5,11 +5,9 @@ import scala.math._
 /**
   * Created by adriano on 10/12/16.
   */
-object EuclidianDistanceScore {
+object EuclidianDistanceScore extends RecomendationAlgorithm {
 
-  def sum(vals:List[Double]) : Double = vals.sum
-
-  def similarityDistance[T](movies:List[Map[String, Any]], person1:Int, person2:Int) : Double = {
+  override def similarityDistance(movies:List[Map[String, Any]], person1:Int, person2:Int) : Double = {
     val byUserId = (userId:Int) => {
       (movie:Map[String, Any]) => {
         val userId = movie("userId").asInstanceOf[Int]
@@ -33,9 +31,11 @@ object EuclidianDistanceScore {
     }
 
     // Here we apply the Euclidian Distance Calculation
-    1/sum(for( person1Movie <- person1Movies; person2Movie <- person2Movies
-             if (person1Movie("movieId") == person2Movie("movieId")))
-      yield pow(person1Movie("rating").asInstanceOf[Double] - person2Movie("rating").asInstanceOf[Double],2)
+    1/((for {
+        person1Movie <- person1Movies;
+        person2Movie <- person2Movies
+        if (person1Movie("movieId") == person2Movie("movieId"))
+      } yield pow(person1Movie("rating").asInstanceOf[Double] - person2Movie("rating").asInstanceOf[Double],2)).sum
     )
   }
 

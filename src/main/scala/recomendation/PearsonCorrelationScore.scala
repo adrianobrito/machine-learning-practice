@@ -3,8 +3,8 @@ package recomendation
 /**
   * Created by adriano.brito on 22/12/2016.
   */
-class PearsonCorrelationScore {
+class PearsonCorrelationScore extends RecomendationAlgorithm{
 
-  def similarityDistance = {}
+  override def similarityDistance(movies: List[Map[String, Any]], person1: Int, person2: Int): Double = ???
 
 }
